@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 
 @Component({
@@ -8,4 +8,7 @@ import { RouterModule } from '@angular/router'
     templateUrl: './header.component.html',
     styleUrl: './header.component.css',
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+    @Input('logo-title')
+    logoTitle: string = 'logo'
+}
