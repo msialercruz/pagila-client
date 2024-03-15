@@ -1,1 +1,22 @@
-<p>film-list works!</p>
+<h3>Liste des films</h3>
+
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Titre</th>
+            <th scope="col">Année de sortie</th>
+            <th scope="col">Durée</th>
+            <th scope="col">Classement</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let film of films">
+            <td>{{ film.title }}</td>
+            <td>{{ film.releaseYear }}</td>
+            <td>{{ film.length }}</td>
+            <td>{{ film.rating }}</td>
+        </tr>
+    </tbody>
+</table>
