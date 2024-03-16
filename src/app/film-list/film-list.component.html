@@ -20,3 +20,12 @@
         </tr>
     </tbody>
 </table>
+
+<br />
+
+<app-pagination
+    *ngIf="films.length > 0"
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    (changePage)="loadFilms($event)"
+/>
