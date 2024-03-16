@@ -1,0 +1,27 @@
+<div>
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a
+                class="page-link"
+                [class.disabled]="!hasPrevious"
+                (click)="previous()"
+            >
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li
+            *ngFor="let page of pages"
+            (click)="changePage(page)"
+            class="page-item"
+        >
+            <a class="page-link" [class.active]="page == currentPage">
+                {{ page }}
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" [class.disabled]="!hasNext" (click)="next()">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</div>
