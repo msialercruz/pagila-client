@@ -9,6 +9,6 @@ import { RouterModule } from '@angular/router'
     styleUrl: './header.component.css',
 })
 export class HeaderComponent {
-    @Input('logo-title')
-    logoTitle: string = 'logo'
+    @Input('logoTitle')
+    logoTitle: string = ''
 }
