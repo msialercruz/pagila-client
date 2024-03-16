@@ -4,10 +4,21 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="">Acceuil</a>
+                    <a
+                        class="nav-link"
+                        routerLink=""
+                        routerLinkActive="active"
+                        [routerLinkActiveOptions]="{ exact: true }"
+                        >Accueil</a
+                    >
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" routerLink="films">Films</a>
+                    <a
+                        class="nav-link"
+                        routerLink="films"
+                        routerLinkActive="active"
+                        >Films</a
+                    >
                 </li>
             </ul>
         </div>
