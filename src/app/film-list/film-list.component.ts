@@ -1,11 +1,10 @@
+import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
+import { Film } from '../models/film.model'
 import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
-import { CommonModule } from '@angular/common'
-import { Film } from '../models/film.model'
-import { Subscription } from 'rxjs'
 import { PaginationComponent } from '../pagination/pagination.component'
-import { ActivatedRoute, Router } from '@angular/router'
+import { Subscription } from 'rxjs'
 
 @Component({
     selector: 'app-film-list',
@@ -25,31 +24,19 @@ export class FilmListComponent implements OnInit {
 
     filmsSub?: Subscription
 
-    constructor(
-        private router: Router,
-        private route: ActivatedRoute,
-        private filmService: FilmService
-    ) {}
+    constructor(private filmService: FilmService) {}
 
     ngOnInit() {
         this.filmsSub = this.filmService.filmsSubj.subscribe((films) => {
             this.films = films
         })
-        this.filmService.getFilms()
     }
 
     ngOnDestroy() {
         this.filmsSub?.unsubscribe()
     }
 
-    // TODO: when accessing url from browser
-    // - display correct page
-    // - update pagination component (bidirectionnal)
     loadFilms(page: number) {
         this.filmService.getFilms(page)
-        this.router.navigate(['.'], {
-            relativeTo: this.route,
-            queryParams: { page },
-        })
     }
 }

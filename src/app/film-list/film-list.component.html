@@ -5,10 +5,10 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">Titre</th>
-            <th scope="col">Année de sortie</th>
-            <th scope="col">Durée</th>
-            <th scope="col">Classement</th>
+            <th scope="col" class="col-md-4">Titre</th>
+            <th scope="col" class="col-md-2">Année de sortie</th>
+            <th scope="col" class="col-md-2">Durée</th>
+            <th scope="col" class="col-md-2">Classement</th>
         </tr>
     </thead>
     <tbody>
@@ -24,7 +24,7 @@
 <br />
 
 <app-pagination
-    *ngIf="films.length > 0"
+    [hidden]="films.length == 0"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     (changePage)="loadFilms($event)"
