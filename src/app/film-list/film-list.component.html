@@ -1,14 +1,12 @@
 <h3>Liste des films</h3>
 
-<br />
-
 <input
     class="form-control my-4"
     type="text"
     placeholder="Recherche..."
-    aria-label="query input"
+    autofocus
     [(ngModel)]="currentQuery"
-    (input)="updateQueryParams(1, currentQuery)"
+    (ngModelChange)="updateQueryParams(1, currentQuery)"
 />
 
 <table class="table">

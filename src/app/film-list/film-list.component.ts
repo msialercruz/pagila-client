@@ -74,7 +74,6 @@ export class FilmListComponent implements OnInit {
 
             // TODO: update this.totalPages with value returned from api when
             // implemented
-            // TODO: update hasNext and hasPrevious from PaginationComponent also!
         })
     }
 
@@ -85,18 +84,17 @@ export class FilmListComponent implements OnInit {
 
     updateQueryParams(page: number, query?: string) {
         const queryParams: Params = {}
-        if (query && query !== '' && query.length >= 3) {
+        if (query && query !== '') {
             queryParams.query = query
         }
         if (page && page !== 1) {
             queryParams.page = page
         }
-        // console.log(queryParams)
+        console.log(queryParams)
 
         this.router.navigate([], {
             relativeTo: this.route,
             queryParams,
         })
-        // .then((res) => console.log('updated url state?', !!res))
     }
 }
