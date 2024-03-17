@@ -1,7 +1,13 @@
-import { ActivatedRoute, Router } from '@angular/router'
 import { CommonModule } from '@angular/common'
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
-import { Subscription } from 'rxjs'
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core'
 
 @Component({
     selector: 'app-pagination',
@@ -10,7 +16,7 @@ import { Subscription } from 'rxjs'
     templateUrl: './pagination.component.html',
     styleUrl: './pagination.component.css',
 })
-export class PaginationComponent implements OnInit {
+export class PaginationComponent implements OnInit, OnChanges {
     @Input('currentPage')
     currentPage: number = 1
 
@@ -28,53 +34,33 @@ export class PaginationComponent implements OnInit {
 
     wasLoaded: boolean = true
 
-    queryParamsSub?: Subscription
+    constructor() {}
 
-    constructor(
-        private router: Router,
-        private route: ActivatedRoute
-    ) {}
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.currentPage && changes.currentPage.currentValue) {
+            this.currentPage = changes.currentPage.currentValue
+        }
+        if (changes.totalPages && changes.totalPages.currentValue) {
+            this.totalPages = changes.totalPages.currentValue
+        }
+        this.updateNextPrevious()
+    }
 
     ngOnInit() {
         this.pages = this.range(1, this.totalPages)
-        this.queryParamsSub = this.route.queryParams.subscribe(
-            (queryParams) => {
-                let page = queryParams['page'] ?? 1
-                if (isNaN(page)) {
-                    return this.changePage(1)
-                }
-
-                page = Number(page)
-                if (page < 1) {
-                    return this.changePage(1)
-                } else if (page > this.totalPages) {
-                    return this.changePage(this.totalPages)
-                }
-
-                if (page == this.currentPage && !this.wasLoaded) {
-                    this.wasLoaded = false
-                    return
-                }
-                this.currentPage = Number(page)
-                this.updateNextPrevious()
-                this.changePageEmitter.emit(this.currentPage)
-            }
-        )
     }
 
-    ngOnDestroy() {
-        this.queryParamsSub?.unsubscribe()
-    }
-
-    range(start: number, end: number) {
+    range(start: number, end: number): number[] {
         return [...new Array(end).keys()].map((p) => p + start)
     }
 
     changePage(page: number) {
-        this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: page != 1 ? { page } : {},
-        })
+        if (page === this.currentPage) {
+            return
+        }
+        this.currentPage = page
+        this.updateNextPrevious()
+        this.changePageEmitter.emit(this.currentPage)
     }
 
     private updateNextPrevious() {

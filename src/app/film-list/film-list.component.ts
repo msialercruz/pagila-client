@@ -5,6 +5,7 @@ import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
 import { PaginationComponent } from '../pagination/pagination.component'
 import { Subscription } from 'rxjs'
+import { ActivatedRoute, Router } from '@angular/router'
 
 @Component({
     selector: 'app-film-list',
@@ -24,19 +25,48 @@ export class FilmListComponent implements OnInit {
 
     filmsSub?: Subscription
 
-    constructor(private filmService: FilmService) {}
+    queryParamSub?: Subscription
+
+    constructor(
+        private filmService: FilmService,
+        private router: Router,
+        private route: ActivatedRoute
+    ) {}
 
     ngOnInit() {
+        // read from query params in URL
+        this.queryParamSub = this.route.queryParams.subscribe((queryParams) => {
+            let page = queryParams.page ?? 1
+            if (isNaN(page)) {
+                return this.updatePage(1)
+            }
+
+            page = +page
+            if (page < 1) {
+                return this.updatePage(1)
+            } else if (page > this.totalPages) {
+                return this.updatePage(this.totalPages)
+            }
+
+            this.currentPage = page
+            this.filmService.getFilms(page)
+        })
+
         this.filmsSub = this.filmService.filmsSubj.subscribe((films) => {
             this.films = films
         })
     }
 
     ngOnDestroy() {
+        this.queryParamSub?.unsubscribe()
         this.filmsSub?.unsubscribe()
     }
 
-    loadFilms(page: number) {
-        this.filmService.getFilms(page)
+    // TODO: this should be the method that updates queryParams
+    updatePage(page: number) {
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { page },
+        })
     }
 }
