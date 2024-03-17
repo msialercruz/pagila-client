@@ -42,6 +42,7 @@ export class PaginationComponent implements OnInit, OnChanges {
         }
         if (changes.totalPages && changes.totalPages.currentValue) {
             this.totalPages = changes.totalPages.currentValue
+            this.pages = this.range(1, this.totalPages)
         }
         this.updateNextPrevious()
     }

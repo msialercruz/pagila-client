@@ -14,10 +14,16 @@ export class FilmService {
 
     constructor(private client: HttpClient) {}
 
-    getFilms(page?: number) {
-        const options = page
-            ? { params: new HttpParams().set('page', page) }
-            : {}
+    getFilms(page?: number, query?: string) {
+        let params = new HttpParams()
+        if (page) {
+            params = params.set('page', page)
+        }
+        if (query) {
+            params = params.set('query', query)
+        }
+        const options = { params }
+
         this.client
             .get<any[]>(this.apiUrl, options)
             .pipe(

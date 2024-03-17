@@ -2,6 +2,15 @@
 
 <br />
 
+<input
+    class="form-control my-4"
+    type="text"
+    placeholder="Recherche..."
+    aria-label="query input"
+    [(ngModel)]="currentQuery"
+    (input)="updateQueryParams(1, currentQuery)"
+/>
+
 <table class="table">
     <thead>
         <tr>
@@ -27,5 +36,5 @@
     [hidden]="films.length == 0"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
-    (changePage)="updatePage($event)"
+    (changePage)="updateQueryParams($event, currentQuery)"
 />
