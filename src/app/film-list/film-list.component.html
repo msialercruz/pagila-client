@@ -6,7 +6,7 @@
     placeholder="Recherche..."
     autofocus
     [(ngModel)]="currentQuery"
-    (ngModelChange)="updateQueryParams(1, currentQuery)"
+    (input)="updateQuerySubj($event)"
 />
 
 <table class="table">

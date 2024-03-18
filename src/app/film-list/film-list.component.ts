@@ -4,7 +4,7 @@ import { Film } from '../models/film.model'
 import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
 import { PaginationComponent } from '../pagination/pagination.component'
-import { Subscription } from 'rxjs'
+import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs'
 import { ActivatedRoute, Params, Router } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 
@@ -17,6 +17,10 @@ import { FormsModule } from '@angular/forms'
     styleUrl: './film-list.component.css',
 })
 export class FilmListComponent implements OnInit {
+    querySub?: Subscription
+
+    querySubj = new Subject<string>()
+
     currentQuery: string = ''
 
     films: Film[] = []
@@ -35,7 +39,18 @@ export class FilmListComponent implements OnInit {
         private route: ActivatedRoute
     ) {}
 
+    updateQuerySubj(event: Event) {
+        const query = (event.target as HTMLInputElement).value
+        this.querySubj.next(query)
+    }
+
     ngOnInit() {
+        this.querySub = this.querySubj
+            .pipe(debounceTime(500), distinctUntilChanged())
+            .subscribe((query) => {
+                this.updateQueryParams(1, query)
+            })
+
         // read from query params in URL
         this.queryParamSub = this.route.queryParams.subscribe((queryParams) => {
             let page = queryParams.page ?? 1
@@ -80,6 +95,7 @@ export class FilmListComponent implements OnInit {
     ngOnDestroy() {
         this.queryParamSub?.unsubscribe()
         this.filmsSub?.unsubscribe()
+        this.querySub?.unsubscribe()
     }
 
     updateQueryParams(page: number, query?: string) {
@@ -90,7 +106,6 @@ export class FilmListComponent implements OnInit {
         if (page && page !== 1) {
             queryParams.page = page
         }
-        console.log(queryParams)
 
         this.router.navigate([], {
             relativeTo: this.route,
