@@ -7,11 +7,18 @@ import { PaginationComponent } from '../pagination/pagination.component'
 import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs'
 import { ActivatedRoute, Params, Router } from '@angular/router'
 import { FormsModule } from '@angular/forms'
+import { M2hPipe } from '../pipes/m2h.pipe'
 
 @Component({
     selector: 'app-film-list',
     standalone: true,
-    imports: [CommonModule, FormsModule, HttpClientModule, PaginationComponent],
+    imports: [
+        CommonModule,
+        FormsModule,
+        HttpClientModule,
+        PaginationComponent,
+        M2hPipe,
+    ],
     providers: [FilmService],
     templateUrl: './film-list.component.html',
     styleUrl: './film-list.component.css',

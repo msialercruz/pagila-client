@@ -22,7 +22,7 @@
         <tr *ngFor="let film of films">
             <td>{{ film.title }}</td>
             <td>{{ film.releaseYear }}</td>
-            <td>{{ film.length }}</td>
+            <td>{{ film.length | m2h }}</td>
             <td>{{ film.rating }}</td>
         </tr>
     </tbody>
