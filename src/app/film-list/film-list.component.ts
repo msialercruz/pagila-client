@@ -8,9 +8,10 @@ import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs'
 import { ActivatedRoute, Params, Router } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 import { M2hPipe } from '../pipes/m2h.pipe'
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap'
 
 @Component({
-    selector: 'app-film-list',
+    selector: 'film-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -18,6 +19,7 @@ import { M2hPipe } from '../pipes/m2h.pipe'
         HttpClientModule,
         PaginationComponent,
         M2hPipe,
+        NgbTooltipModule,
     ],
     providers: [FilmService],
     templateUrl: './film-list.component.html',
