@@ -7,6 +7,7 @@
     </div>
 </div>
 
+<!-- TODO: put this in its own component (search-bar) -->
 <input
     class="form-control my-4"
     type="text"
@@ -27,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        <!-- TODO: put this in its own component -->
+        <!-- TODO: put this in its own component (film-list-item) -->
         <tr *ngFor="let film of films" class="align-middle">
             <td>{{ film.title }}</td>
             <td>{{ film.releaseYear }}</td>

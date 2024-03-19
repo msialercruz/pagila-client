@@ -36,7 +36,7 @@ export class FilmListComponent implements OnInit {
 
     currentPage: number = 1
 
-    totalPages: number = 20
+    totalPages: number = 100
 
     filmsSub?: Subscription
 
@@ -93,7 +93,7 @@ export class FilmListComponent implements OnInit {
             if (this.currentQuery !== '') {
                 this.totalPages = 3
             } else {
-                this.totalPages = 20
+                this.totalPages = 100
             }
 
             // TODO: update this.totalPages with value returned from api when

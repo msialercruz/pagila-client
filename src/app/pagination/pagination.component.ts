@@ -18,21 +18,17 @@ import {
 })
 export class PaginationComponent implements OnInit, OnChanges {
     @Input('currentPage')
-    currentPage: number = 1
+    currentPage = 1
 
     @Input('totalPages')
-    totalPages: number = 10
+    totalPages = 10
 
     @Output('changePage')
     changePageEmitter: EventEmitter<number> = new EventEmitter<number>()
 
     pages: number[] = []
 
-    hasPrevious: boolean = false
-
-    hasNext: boolean = false
-
-    wasLoaded: boolean = true
+    numDisplayedPages = 11
 
     constructor() {}
 
@@ -42,17 +38,36 @@ export class PaginationComponent implements OnInit, OnChanges {
         }
         if (changes.totalPages && changes.totalPages.currentValue) {
             this.totalPages = changes.totalPages.currentValue
-            this.pages = this.range(1, this.totalPages)
         }
-        this.updateNextPrevious()
     }
 
-    ngOnInit() {
-        this.pages = this.range(1, this.totalPages)
+    get displayedPages() {
+        if (this.totalPages <= this.numDisplayedPages) {
+            return this.range(1, this.totalPages)
+        } else if (this.currentPage >= 1 && this.currentPage <= 6) {
+            return this.range(1, 11)
+        } else if (
+            this.currentPage > 6 &&
+            this.currentPage <= this.totalPages - 6
+        ) {
+            return this.range(this.currentPage - 5, this.currentPage + 5)
+        } else {
+            return this.range(this.totalPages - 10, this.totalPages)
+        }
     }
+
+    get hasNext() {
+        return this.currentPage < this.totalPages
+    }
+
+    get hasPrevious() {
+        return this.currentPage > 1
+    }
+
+    ngOnInit() {}
 
     range(start: number, end: number): number[] {
-        return [...new Array(end).keys()].map((p) => p + start)
+        return [...new Array(end - start + 1).keys()].map((p) => p + start)
     }
 
     changePage(page: number) {
@@ -60,23 +75,15 @@ export class PaginationComponent implements OnInit, OnChanges {
             return
         }
         this.currentPage = page
-        this.updateNextPrevious()
         this.changePageEmitter.emit(this.currentPage)
     }
 
-    private updateNextPrevious() {
-        this.hasPrevious = this.currentPage > 1
-        this.hasNext = this.currentPage < this.totalPages
-    }
-
     next() {
-        this.updateNextPrevious()
         const nextPage = this.hasNext ? this.currentPage + 1 : this.currentPage
         this.changePage(nextPage)
     }
 
     previous() {
-        this.updateNextPrevious()
         const previousPage = this.hasPrevious
             ? this.currentPage - 1
             : this.currentPage
