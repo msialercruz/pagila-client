@@ -1,0 +1,9 @@
+li.page-item a.page-link {
+    cursor: pointer;
+    user-select: none;
+    color: black;
+}
+
+li.page-item a.page-link.active {
+    color: white;
+}
