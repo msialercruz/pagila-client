@@ -72,32 +72,16 @@ export class FilmListComponent implements OnInit {
             if (page < 1) {
                 return this.updateQueryParams(1)
             }
-            // NOTE: making this comparison at start will always be
-            // incorrect, it will always be equal to 20! (init value)
-            // maybe handle this after getting films? (in
-            // filmsSubj.subscribe(...))
-            else if (page > this.totalPages) {
-                return this.updateQueryParams(this.totalPages)
-            }
 
             this.currentPage = page
             this.currentQuery = query
             this.filmService.getFilms(page, query)
         })
 
-        this.filmsSub = this.filmService.filmsSubj.subscribe((films) => {
-            this.films = films
-
-            // TODO: remove this when totalPages returned from api is
-            // implemented
-            if (this.currentQuery !== '') {
-                this.totalPages = 3
-            } else {
-                this.totalPages = 100
-            }
-
-            // TODO: update this.totalPages with value returned from api when
-            // implemented
+        this.filmsSub = this.filmService.pageFilmSubj.subscribe((pageFilm) => {
+            this.films = pageFilm.films
+            // TODO: check < currentPage
+            this.totalPages = pageFilm.totalPages
         })
     }
 

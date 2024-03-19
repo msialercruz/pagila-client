@@ -52,7 +52,7 @@
 <br />
 
 <app-pagination
-    [hidden]="films.length == 0"
+    [hidden]="totalPages < 2"
     [currentPage]="currentPage"
     [totalPages]="totalPages"
     (changePage)="updateQueryParams($event, currentQuery)"
