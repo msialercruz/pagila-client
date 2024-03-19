@@ -3,6 +3,19 @@ import { Film } from '../models/film.model'
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs/operators'
+import { PageFilm } from '../models/page-film.model'
+
+interface FilmDTO {
+    title: string
+    release_year: number
+    length: number
+    rating: string
+}
+
+interface PageFilmDTO {
+    total_pages: number
+    films: FilmDTO[]
+}
 
 @Injectable({
     providedIn: 'root',
@@ -10,9 +23,9 @@ import { map } from 'rxjs/operators'
 export class FilmService {
     private readonly apiUrl = 'http://localhost:8080/films'
 
-    public filmsSubj = new BehaviorSubject<Film[]>([])
+    public pageFilmSubj = new BehaviorSubject<PageFilm>(new PageFilm(1, []))
 
-    constructor(private client: HttpClient) {}
+    constructor(private http: HttpClient) {}
 
     getFilms(page?: number, query?: string) {
         let params = new HttpParams()
@@ -24,28 +37,29 @@ export class FilmService {
         }
         const options = { params }
 
-        this.client
+        this.http
             .get<any[]>(this.apiUrl, options)
             .pipe(
-                map((data) =>
-                    data.map(
-                        (e) =>
+                map((data: PageFilmDTO | any) => {
+                    const films = data['films'].map(
+                        (f: FilmDTO) =>
                             new Film(
-                                e['title'],
-                                e['release_year'],
-                                e['length'],
-                                e['rating']
+                                f['title'],
+                                f['release_year'],
+                                f['length'],
+                                f['rating']
                             )
                     )
-                )
+                    return new PageFilm(data['total_pages'], films)
+                })
             )
             .subscribe({
-                next: (films) => {
-                    this.filmsSubj.next(films)
+                next: (pageFilm) => {
+                    this.pageFilmSubj.next(pageFilm)
                 },
                 error: (err) => {
                     console.error(err)
-                    this.filmsSubj.next([])
+                    this.pageFilmSubj.next(new PageFilm(0, []))
                 },
             })
     }
