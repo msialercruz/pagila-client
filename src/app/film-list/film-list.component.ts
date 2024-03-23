@@ -4,8 +4,16 @@ import { Film } from '../models/film.model'
 import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
 import { PaginationComponent } from '../pagination/pagination.component'
-import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs'
-import { ActivatedRoute, Params, Router } from '@angular/router'
+import {
+    Observable,
+    Subject,
+    Subscription,
+    debounceTime,
+    distinctUntilChanged,
+    map,
+    tap,
+} from 'rxjs'
+import { ActivatedRoute, Data, Params, Router } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 import { M2hPipe } from '../pipes/m2h.pipe'
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap'
@@ -38,12 +46,11 @@ export class FilmListComponent implements OnInit {
 
     totalPages: number = 100
 
-    filmsSub?: Subscription
-
     queryParamSub?: Subscription
 
+    pageFilm$?: Observable<Data>
+
     constructor(
-        private filmService: FilmService,
         private router: Router,
         private route: ActivatedRoute
     ) {}
@@ -60,7 +67,6 @@ export class FilmListComponent implements OnInit {
                 this.updateQueryParams(1, query)
             })
 
-        // read from query params in URL
         this.queryParamSub = this.route.queryParams.subscribe((queryParams) => {
             let page = queryParams.page ?? 1
             let query = queryParams.query ?? ''
@@ -72,22 +78,24 @@ export class FilmListComponent implements OnInit {
             if (page < 1) {
                 return this.updateQueryParams(1)
             }
-
             this.currentPage = page
             this.currentQuery = query
-            this.filmService.getFilms(page, query)
         })
 
-        this.filmsSub = this.filmService.pageFilmSubj.subscribe((pageFilm) => {
-            this.films = pageFilm.films
-            // TODO: check < currentPage
-            this.totalPages = pageFilm.totalPages
-        })
+        this.pageFilm$ = this.route.data.pipe(
+            map(({ pageFilm }) => pageFilm),
+            tap((pageFilm) => {
+                this.films = pageFilm.films
+                this.totalPages = pageFilm.totalPages
+                if (this.currentPage > this.totalPages) {
+                    this.updateQueryParams(this.totalPages, this.currentQuery)
+                }
+            })
+        )
     }
 
     ngOnDestroy() {
         this.queryParamSub?.unsubscribe()
-        this.filmsSub?.unsubscribe()
         this.querySub?.unsubscribe()
     }
 

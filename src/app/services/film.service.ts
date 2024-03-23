@@ -63,4 +63,30 @@ export class FilmService {
                 },
             })
     }
+
+    getFilms2(page?: number, query?: string) {
+        let params = new HttpParams()
+        if (page) {
+            params = params.set('page', page)
+        }
+        if (query) {
+            params = params.set('query', query)
+        }
+        const options = { params }
+
+        return this.http.get<any[]>(this.apiUrl, options).pipe(
+            map((data: PageFilmDTO | any) => {
+                const films = data['films'].map(
+                    (f: FilmDTO) =>
+                        new Film(
+                            f['title'],
+                            f['release_year'],
+                            f['length'],
+                            f['rating']
+                        )
+                )
+                return new PageFilm(data['total_pages'], films)
+            })
+        )
+    }
 }
