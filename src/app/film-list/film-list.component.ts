@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
-import { Film } from '../models/film.model'
 import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
 import { PaginationComponent } from '../pagination/pagination.component'
@@ -34,78 +33,97 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap'
     styleUrl: './film-list.component.css',
 })
 export class FilmListComponent implements OnInit {
-    querySub?: Subscription
+    // pagination component
+    currentPage = 1
+    totalPages = 100
+    currentPageSize = 10
+    pageSizeOptions = [5, 10, 25, 50]
+    totalElements = 100
 
-    querySubj = new Subject<string>()
-
-    currentQuery: string = ''
-
-    films: Film[] = []
-
-    currentPage: number = 1
-
-    totalPages: number = 100
-
-    queryParamSub?: Subscription
-
+    // resolver
     pageFilm$?: Observable<Data>
+
+    // query input
+    query$$?: Subscription
+    currentQuery = ''
+    delayedQuery = new Subject<string>()
+
+    // url state
+    urlQueryParams$$?: Subscription
 
     constructor(
         private router: Router,
         private route: ActivatedRoute
     ) {}
 
-    updateQuerySubj(event: Event) {
+    updateQuery(event: Event) {
         const query = (event.target as HTMLInputElement).value
-        this.querySubj.next(query)
+        this.delayedQuery.next(query)
     }
 
     ngOnInit() {
-        this.querySub = this.querySubj
+        this.query$$ = this.delayedQuery
             .pipe(debounceTime(500), distinctUntilChanged())
-            .subscribe((query) => {
-                this.updateQueryParams(1, query)
+            .subscribe(() => {
+                this.updateUrlQueryParams(
+                    1,
+                    this.currentQuery,
+                    this.currentPageSize
+                )
             })
 
-        this.queryParamSub = this.route.queryParams.subscribe((queryParams) => {
-            let page = queryParams.page ?? 1
-            let query = queryParams.query ?? ''
-            if (isNaN(page)) {
-                return this.updateQueryParams(1)
-            }
+        this.urlQueryParams$$ = this.route.queryParams.subscribe(
+            (queryParams) => {
+                let page = queryParams.page ?? 1
+                let query = queryParams.query ?? ''
+                let size = queryParams.size ?? 10
+                if (isNaN(page)) {
+                    return this.updateUrlQueryParams(1)
+                }
 
-            page = +page
-            if (page < 1) {
-                return this.updateQueryParams(1)
+                page = +page
+                if (page < 1) {
+                    return this.updateUrlQueryParams(1)
+                }
+
+                this.currentPage = page
+                this.currentPageSize = +size
+                this.currentQuery = query
             }
-            this.currentPage = page
-            this.currentQuery = query
-        })
+        )
 
         this.pageFilm$ = this.route.data.pipe(
             map(({ pageFilm }) => pageFilm),
             tap((pageFilm) => {
-                this.films = pageFilm.films
                 this.totalPages = pageFilm.totalPages
+                this.totalElements = pageFilm.totalElements
                 if (this.currentPage > this.totalPages) {
-                    this.updateQueryParams(this.totalPages, this.currentQuery)
+                    this.updateUrlQueryParams(
+                        this.totalPages,
+                        this.currentQuery
+                    )
                 }
             })
         )
     }
 
+    handleError() {}
+
     ngOnDestroy() {
-        this.queryParamSub?.unsubscribe()
-        this.querySub?.unsubscribe()
+        this.urlQueryParams$$?.unsubscribe()
+        this.query$$?.unsubscribe()
     }
 
-    updateQueryParams(page: number, query?: string) {
+    updateUrlQueryParams(page: number, query?: string, size?: number) {
         const queryParams: Params = {}
         if (query && query !== '') {
             queryParams.query = query
         }
         if (page && page !== 1) {
             queryParams.page = page
+        }
+        if (size && size !== 10) {
+            queryParams.size = size
         }
 
         this.router.navigate([], {

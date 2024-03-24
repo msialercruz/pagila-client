@@ -14,6 +14,7 @@ interface FilmDTO {
 
 interface PageFilmDTO {
     total_pages: number
+    total_elements: number
     films: FilmDTO[]
 }
 
@@ -23,11 +24,11 @@ interface PageFilmDTO {
 export class FilmService {
     private readonly apiUrl = 'http://localhost:8080/films'
 
-    public pageFilmSubj = new BehaviorSubject<PageFilm>(new PageFilm(1, []))
+    public pageFilmSubj = new BehaviorSubject<PageFilm>(new PageFilm())
 
     constructor(private http: HttpClient) {}
 
-    getFilms(page?: number, query?: string) {
+    getFilms(page?: number, query?: string, size?: number) {
         let params = new HttpParams()
         if (page) {
             params = params.set('page', page)
@@ -35,45 +36,10 @@ export class FilmService {
         if (query) {
             params = params.set('query', query)
         }
-        const options = { params }
-
-        this.http
-            .get<any[]>(this.apiUrl, options)
-            .pipe(
-                map((data: PageFilmDTO | any) => {
-                    const films = data['films'].map(
-                        (f: FilmDTO) =>
-                            new Film(
-                                f['title'],
-                                f['release_year'],
-                                f['length'],
-                                f['rating']
-                            )
-                    )
-                    return new PageFilm(data['total_pages'], films)
-                })
-            )
-            .subscribe({
-                next: (pageFilm) => {
-                    this.pageFilmSubj.next(pageFilm)
-                },
-                error: (err) => {
-                    console.error(err)
-                    this.pageFilmSubj.next(new PageFilm(0, []))
-                },
-            })
-    }
-
-    getFilms2(page?: number, query?: string) {
-        let params = new HttpParams()
-        if (page) {
-            params = params.set('page', page)
-        }
-        if (query) {
-            params = params.set('query', query)
+        if (size) {
+            params = params.set('size', size)
         }
         const options = { params }
-
         return this.http.get<any[]>(this.apiUrl, options).pipe(
             map((data: PageFilmDTO | any) => {
                 const films = data['films'].map(
@@ -85,7 +51,11 @@ export class FilmService {
                             f['rating']
                         )
                 )
-                return new PageFilm(data['total_pages'], films)
+                return new PageFilm(
+                    data['total_pages'],
+                    data['total_elements'],
+                    films
+                )
             })
         )
     }

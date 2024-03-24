@@ -14,7 +14,7 @@
     placeholder="Recherche..."
     autofocus
     [(ngModel)]="currentQuery"
-    (input)="updateQuerySubj($event)"
+    (input)="updateQuery($event)"
 />
 
 <table class="table">
@@ -49,11 +49,13 @@
     </tbody>
 </table>
 
-<br />
-
 <app-pagination
     [hidden]="totalPages < 2"
     [currentPage]="currentPage"
+    [currentPageSize]="currentPageSize"
+    [pageSizeOptions]="pageSizeOptions"
     [totalPages]="totalPages"
-    (changePage)="updateQueryParams($event, currentQuery)"
+    [totalElements]="totalElements"
+    (changePage)="updateUrlQueryParams($event, currentQuery, currentPageSize)"
+    (changeSize)="updateUrlQueryParams(1, currentQuery, $event)"
 />

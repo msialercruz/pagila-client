@@ -1,45 +1,45 @@
-<div>
-    <ul class="pagination justify-content-center">
-        <li class="page-item">
-            <a
-                class="page-link"
-                [class.disabled]="currentPage === 1"
-                (click)="changePage(1)"
-            >
-                <span aria-hidden="true"> &#x219e; </span>
-            </a>
-        </li>
-        <li class="page-item">
-            <a
-                class="page-link"
-                [class.disabled]="!hasPrevious"
-                (click)="previous()"
-            >
-                <span aria-hidden="true">&laquo;</span>
-            </a>
-        </li>
-        <li
-            *ngFor="let page of displayedPages"
-            (click)="changePage(page)"
-            class="page-item"
+<div class="row justify-content-end">
+    <div class="col col-auto">
+        <label class="col-form-label">Afficher par page:</label>
+    </div>
+    <div class="col col-auto">
+        <select
+            class="form-select"
+            id=""
+            name=""
+            [(ngModel)]="currentPageSize"
+            (ngModelChange)="changeSizeEmitter.emit(currentPageSize)"
         >
-            <a class="page-link" [class.active]="page === currentPage">
-                {{ page }}
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" [class.disabled]="!hasNext" (click)="next()">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        <li class="page-item">
-            <a
-                class="page-link"
-                [class.disabled]="currentPage === totalPages"
-                (click)="changePage(totalPages)"
-            >
-                <span aria-hidden="true">&#x21a0;</span>
-            </a>
-        </li>
-    </ul>
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                {{ size }}
+            </option>
+        </select>
+    </div>
+    <div class="col col-auto">
+        <label class="col-form-label"
+            >{{ pageFirstIndex }} à {{ pageLastIndex }} sur {{ totalElements }}
+        </label>
+    </div>
+    <div class="col col-auto">
+        <ul class="pagination btn-group" role="group">
+            <li class="page-item">
+                <a
+                    class="page-link"
+                    [class.disabled]="!hasPrevious"
+                    (click)="previous()"
+                >
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a
+                    class="page-link"
+                    [class.disabled]="!hasNext"
+                    (click)="next()"
+                >
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>
