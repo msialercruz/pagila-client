@@ -21,7 +21,7 @@
     #sortedTarget
     sortedTarget
     (sortChange)="handleSort($event)"
-    [initialSort]="initialSort"
+    [currentSort]="currentSort"
     class="table"
 >
     <thead>
@@ -81,14 +81,7 @@
     [totalPages]="totalPages"
     [totalElements]="totalElements"
     (changePage)="
-        updateUrlQueryParams(
-            $event,
-            currentQuery,
-            currentPageSize,
-            currentSortText
-        )
+        updateUrlQueryParams($event, currentQuery, currentPageSize, currentSort)
     "
-    (changeSize)="
-        updateUrlQueryParams(1, currentQuery, $event, currentSortText)
-    "
+    (changeSize)="updateUrlQueryParams(1, currentQuery, $event, currentSort)"
 />

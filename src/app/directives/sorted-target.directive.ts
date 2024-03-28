@@ -1,8 +1,17 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core'
+import {
+    Directive,
+    EventEmitter,
+    Input,
+    OnChanges,
+    Optional,
+    Output,
+    SimpleChanges,
+} from '@angular/core'
 import {
     SortColumnComponent,
     SortDirection,
 } from '../sort-column/sort-column.component'
+import { Subject } from 'rxjs'
 
 // NOTE: inspired by
 // https://github.com/angular/components/blob/d38798a474278c3d4b1533ae3ad7273786be9372/src/material/sort/sort.ts#L76
@@ -10,29 +19,42 @@ import {
     selector: '[sortedTarget]',
     standalone: true,
 })
-export class SortedTargetDirective {
+export class SortedTargetDirective implements OnChanges {
     // emits to output method and to columns also
     @Output('sortChange')
-    sortEmitter: EventEmitter<Sort> = new EventEmitter<Sort>()
+    sortEmitter = new EventEmitter<Sort>()
 
-    @Input('initialSort')
-    initialSort?: Sort
+    sortColumnsState = new Subject<Sort>()
 
+    @Input('currentSort')
     currentSort?: Sort
 
-    private sortColumns: Map<string, SortColumnComponent> = new Map<
-        string,
-        SortColumnComponent
-    >()
+    private sortColumns = new Map<string, SortColumnComponent>()
 
-    applySort(sortable: SortColumnComponent) {
-        if (sortable.value && this.sortColumns.has(sortable.value)) {
-            sortable.direction = this.getNextDirection(sortable)
-            this.currentSort = {
-                value: sortable.value,
-                direction: sortable.direction,
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.currentSort) {
+            this.currentSort = changes.currentSort.currentValue ?? new Sort()
+            if (!this.currentSort) {
+                return
             }
-            this.sortEmitter.next(this.currentSort)
+            if (this.sortColumns.has(this.currentSort.value)) {
+                const activeColumn = this.sortColumns.get(
+                    this.currentSort.value
+                )
+                activeColumn!.direction = this.currentSort.direction
+            }
+            this.sortColumnsState.next(this.currentSort)
+        }
+    }
+
+    applySort(sortColumn: SortColumnComponent) {
+        if (sortColumn.value && this.sortColumns.has(sortColumn.value)) {
+            sortColumn.direction = this.getNextDirection(sortColumn)
+            this.currentSort = {
+                value: sortColumn.value,
+                direction: sortColumn.direction,
+            }
+            this.sortEmitter.next(this.currentSort ?? new Sort())
         }
     }
 
@@ -41,11 +63,11 @@ export class SortedTargetDirective {
             this.sortColumns.set(sortColumn.value, sortColumn)
             // apply initial sort
             if (
-                this.initialSort &&
-                sortColumn.value === this.initialSort.value
+                this.currentSort &&
+                sortColumn.value === this.currentSort.value
             ) {
-                sortColumn.direction = this.initialSort.direction
-                this.currentSort = this.initialSort
+                sortColumn.direction = this.currentSort.direction
+                this.currentSort = this.currentSort
             }
         }
     }
@@ -54,10 +76,6 @@ export class SortedTargetDirective {
         if (sortColumn.value && this.sortColumns.has(sortColumn.value)) {
             this.sortColumns.delete(sortColumn.value)
         }
-    }
-
-    reset() {
-        this.sortEmitter.next(new Sort())
     }
 
     private getNextDirection(sortColumn: SortColumnComponent) {

@@ -8,6 +8,7 @@ import {
     Optional,
 } from '@angular/core'
 import { SortedTargetDirective } from '../directives/sorted-target.directive'
+import { merge } from 'rxjs'
 
 // NOTE: inspired by https://github.com/angular/components/blob/d38798a474278c3d4b1533ae3ad7273786be9372/src/material/sort/sort-header.ts#L73
 @Component({
@@ -31,8 +32,11 @@ export class SortColumnComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.sortedTarget.register(this)
-        this.sortedTarget.sortEmitter.subscribe((sort) => {
-            if (this.value !== sort.value) {
+        merge(
+            this.sortedTarget.sortEmitter,
+            this.sortedTarget.sortColumnsState
+        ).subscribe((sort) => {
+            if (!sort || this.value !== sort.value) {
                 this.direction = SortDirection.NONE
             }
         })
