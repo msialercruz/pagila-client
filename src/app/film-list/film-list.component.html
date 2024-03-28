@@ -17,14 +17,38 @@
     (input)="updateQuery($event)"
 />
 
-<table class="table">
+<table
+    #sortedTarget
+    sortedTarget
+    (sortChange)="handleSort($event)"
+    [initialSort]="initialSort"
+    class="table"
+>
     <thead>
         <tr>
-            <th scope="col" class="col-md-4">Titre</th>
-            <th scope="col" class="col-md-2">Année de sortie</th>
-            <th scope="col" class="col-md-2">Durée</th>
-            <th scope="col" class="col-md-2">Classement</th>
-            <th scope="col" class="col-md-auto"></th>
+            <th sortColumn="title" scope="col" role="button" class="col-md-4">
+                Titre
+            </th>
+            <th
+                sortColumn="release_year"
+                scope="col"
+                role="button"
+                class="col-md-2"
+            >
+                Année de sortie
+            </th>
+            <th sortColumn="length" scope="col" role="button" class="col-md-2">
+                Durée
+            </th>
+            <th sortColumn="rating" scope="col" role="button" class="col-md-2">
+                Classement
+            </th>
+            <th
+                sortColumn=""
+                scope="col"
+                role="button"
+                class="col-md-auto"
+            ></th>
         </tr>
     </thead>
     <tbody *ngIf="pageFilm$ | async as pageFilm">
@@ -56,6 +80,15 @@
     [pageSizeOptions]="pageSizeOptions"
     [totalPages]="totalPages"
     [totalElements]="totalElements"
-    (changePage)="updateUrlQueryParams($event, currentQuery, currentPageSize)"
-    (changeSize)="updateUrlQueryParams(1, currentQuery, $event)"
+    (changePage)="
+        updateUrlQueryParams(
+            $event,
+            currentQuery,
+            currentPageSize,
+            currentSortText
+        )
+    "
+    (changeSize)="
+        updateUrlQueryParams(1, currentQuery, $event, currentSortText)
+    "
 />

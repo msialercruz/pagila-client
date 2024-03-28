@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
 import { PaginationComponent } from '../pagination/pagination.component'
@@ -16,6 +16,14 @@ import { ActivatedRoute, Data, Params, Router } from '@angular/router'
 import { FormsModule } from '@angular/forms'
 import { M2hPipe } from '../pipes/m2h.pipe'
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap'
+import {
+    Sort,
+    SortedTargetDirective,
+} from '../directives/sorted-target.directive'
+import {
+    SortColumnComponent,
+    SortDirection,
+} from '../sort-column/sort-column.component'
 
 @Component({
     selector: 'film-list',
@@ -27,6 +35,8 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap'
         PaginationComponent,
         M2hPipe,
         NgbTooltipModule,
+        SortedTargetDirective,
+        SortColumnComponent,
     ],
     providers: [FilmService],
     templateUrl: './film-list.component.html',
@@ -40,6 +50,9 @@ export class FilmListComponent implements OnInit {
     pageSizeOptions = [5, 10, 25, 50]
     totalElements = 100
 
+    @ViewChild('sortedTarget', { read: SortedTargetDirective })
+    sortedTarget?: SortedTargetDirective
+
     // resolver
     pageFilm$?: Observable<Data>
 
@@ -47,6 +60,10 @@ export class FilmListComponent implements OnInit {
     query$$?: Subscription
     currentQuery = ''
     delayedQuery = new Subject<string>()
+
+    // sort header
+    currentSortText: string = ''
+    initialSort?: Sort
 
     // url state
     urlQueryParams$$?: Subscription
@@ -61,14 +78,33 @@ export class FilmListComponent implements OnInit {
         this.delayedQuery.next(query)
     }
 
+    // TODO: move this elsewhere
+    parseSortText(sortText: string) {
+        if (!sortText) {
+            return
+        }
+        const split = sortText.split(',')
+        const sort = new Sort()
+        sort.value = split[0]
+        if (split.length === 2) {
+            sort.direction = split[1] as SortDirection
+        }
+        return sort
+    }
+
     ngOnInit() {
+        this.initialSort = this.parseSortText(
+            this.route.snapshot.queryParams.sort
+        )
+
         this.query$$ = this.delayedQuery
             .pipe(debounceTime(500), distinctUntilChanged())
             .subscribe(() => {
                 this.updateUrlQueryParams(
                     1,
                     this.currentQuery,
-                    this.currentPageSize
+                    this.currentPageSize,
+                    this.currentSortText
                 )
             })
 
@@ -77,6 +113,8 @@ export class FilmListComponent implements OnInit {
                 let page = queryParams.page ?? 1
                 let query = queryParams.query ?? ''
                 let size = queryParams.size ?? 10
+                let sort = queryParams.sort ?? ''
+
                 if (isNaN(page)) {
                     return this.updateUrlQueryParams(1)
                 }
@@ -86,9 +124,12 @@ export class FilmListComponent implements OnInit {
                     return this.updateUrlQueryParams(1)
                 }
 
+                this.currentSortText = sort
                 this.currentPage = page
                 this.currentPageSize = +size
                 this.currentQuery = query
+
+                this.fixSortedTarget()
             }
         )
 
@@ -107,14 +148,24 @@ export class FilmListComponent implements OnInit {
         )
     }
 
-    handleError() {}
+    fixSortedTarget() {
+        // when clicking on a router relative link
+        if (this.currentSortText === '' && this.sortedTarget?.currentSort) {
+            this.sortedTarget.sortEmitter.next(new Sort())
+        }
+    }
 
     ngOnDestroy() {
         this.urlQueryParams$$?.unsubscribe()
         this.query$$?.unsubscribe()
     }
 
-    updateUrlQueryParams(page: number, query?: string, size?: number) {
+    updateUrlQueryParams(
+        page: number,
+        query?: string,
+        size?: number,
+        sort?: string
+    ) {
         const queryParams: Params = {}
         if (query && query !== '') {
             queryParams.query = query
@@ -125,10 +176,26 @@ export class FilmListComponent implements OnInit {
         if (size && size !== 10) {
             queryParams.size = size
         }
+        if (sort && sort !== '') {
+            queryParams.sort = sort
+        }
 
         this.router.navigate([], {
             relativeTo: this.route,
             queryParams,
         })
+    }
+
+    handleSort(sort: Sort) {
+        const sortText =
+            sort.direction === SortDirection.NONE
+                ? ''
+                : `${sort.value},${sort.direction}`
+        this.updateUrlQueryParams(
+            this.currentPage,
+            this.currentQuery,
+            this.currentPageSize,
+            sortText
+        )
     }
 }

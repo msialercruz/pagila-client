@@ -28,7 +28,7 @@ export class FilmService {
 
     constructor(private http: HttpClient) {}
 
-    getFilms(page?: number, query?: string, size?: number) {
+    getFilms(page?: number, query?: string, size?: number, sort?: string) {
         let params = new HttpParams()
         if (page) {
             params = params.set('page', page)
@@ -38,6 +38,9 @@ export class FilmService {
         }
         if (size) {
             params = params.set('size', size)
+        }
+        if (sort) {
+            params = params.set('sort', sort)
         }
         const options = { params }
         return this.http.get<any[]>(this.apiUrl, options).pipe(
