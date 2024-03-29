@@ -3,7 +3,6 @@ import {
     EventEmitter,
     Input,
     OnChanges,
-    Optional,
     Output,
     SimpleChanges,
 } from '@angular/core'

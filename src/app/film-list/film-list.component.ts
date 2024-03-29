@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { FilmService } from '../services/film.service'
 import { HttpClientModule } from '@angular/common/http'
 import { PaginationComponent } from '../pagination/pagination.component'
@@ -49,9 +49,6 @@ export class FilmListComponent implements OnInit {
     currentPageSize = 10
     pageSizeOptions = [5, 10, 25, 50]
     totalElements = 100
-
-    @ViewChild('sortedTarget', { read: SortedTargetDirective })
-    sortedTarget?: SortedTargetDirective
 
     // resolver
     pageFilm$?: Observable<Data>
@@ -162,12 +159,11 @@ export class FilmListComponent implements OnInit {
         if (size && size !== 10) {
             queryParams.size = size
         }
-        if (sort) {
-            queryParams.sort =
-                sort.direction === SortDirection.NONE
-                    ? ''
-                    : `${sort.value},${sort.direction}`
+        if (sort && sort.direction !== '') {
+            queryParams.sort = `${sort.value},${sort.direction}`
         }
+
+        console.log(queryParams, sort)
 
         this.router.navigate([], {
             relativeTo: this.route,
