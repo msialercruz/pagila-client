@@ -30,17 +30,13 @@ export class PaginationComponent implements OnChanges {
     pageSizeOptions!: number[]
 
     @Output('changeSize')
-    changeSizeEmitter: EventEmitter<number> = new EventEmitter<number>()
+    changeSizeEmitter = new EventEmitter<number>()
 
     @Output('changePage')
-    changePageEmitter: EventEmitter<number> = new EventEmitter<number>()
-
-    numDisplayedPages = 11
+    changePageEmitter = new EventEmitter<number>()
 
     @Input('currentPageSize')
     currentPageSize = 10
-
-    constructor() {}
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.currentPage && changes.currentPage.currentValue) {

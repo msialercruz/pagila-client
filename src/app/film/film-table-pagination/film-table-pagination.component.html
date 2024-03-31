@@ -1,0 +1,10 @@
+<app-pagination
+    [hidden]="totalPages < 2"
+    [currentPage]="currentPage"
+    [currentPageSize]="currentPageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [totalPages]="totalPages"
+    [totalElements]="totalElements"
+    (changePage)="updatePageNumber($event)"
+    (changeSize)="updatePageSize($event)"
+/>

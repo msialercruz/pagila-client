@@ -16,6 +16,7 @@ interface PageFilmDTO {
     total_pages: number
     total_elements: number
     films: FilmDTO[]
+    page: number
 }
 
 @Injectable({
@@ -57,7 +58,8 @@ export class FilmService {
                 return new PageFilm(
                     data['total_pages'],
                     data['total_elements'],
-                    films
+                    films,
+                    page
                 )
             })
         )

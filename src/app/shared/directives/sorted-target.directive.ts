@@ -6,11 +6,11 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core'
+import { Subject } from 'rxjs'
 import {
     SortColumnComponent,
     SortDirection,
-} from '../sort-column/sort-column.component'
-import { Subject } from 'rxjs'
+} from '../components/sort-column/sort-column.component'
 
 // NOTE: inspired by
 // https://github.com/angular/components/blob/d38798a474278c3d4b1533ae3ad7273786be9372/src/material/sort/sort.ts#L76

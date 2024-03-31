@@ -7,8 +7,8 @@ import {
     OnInit,
     Optional,
 } from '@angular/core'
-import { SortedTargetDirective } from '../directives/sorted-target.directive'
 import { merge } from 'rxjs'
+import { SortedTargetDirective } from '../../directives/sorted-target.directive'
 
 // NOTE: inspired by https://github.com/angular/components/blob/d38798a474278c3d4b1533ae3ad7273786be9372/src/material/sort/sort-header.ts#L73
 @Component({

@@ -1,0 +1,8 @@
+<input
+    class="form-control my-4"
+    type="text"
+    placeholder="Recherche..."
+    autofocus
+    [(ngModel)]="currentQuery"
+    (input)="updateQuery($event)"
+/>

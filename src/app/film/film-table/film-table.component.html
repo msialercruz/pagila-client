@@ -7,15 +7,7 @@
     </div>
 </div>
 
-<!-- TODO: put this in its own component (search-bar) -->
-<input
-    class="form-control my-4"
-    type="text"
-    placeholder="Recherche..."
-    autofocus
-    [(ngModel)]="currentQuery"
-    (input)="updateQuery($event)"
-/>
+<film-search-bar />
 
 <table
     #sortedTarget
@@ -73,15 +65,4 @@
     </tbody>
 </table>
 
-<app-pagination
-    [hidden]="totalPages < 2"
-    [currentPage]="currentPage"
-    [currentPageSize]="currentPageSize"
-    [pageSizeOptions]="pageSizeOptions"
-    [totalPages]="totalPages"
-    [totalElements]="totalElements"
-    (changePage)="
-        updateUrlQueryParams($event, currentQuery, currentPageSize, currentSort)
-    "
-    (changeSize)="updateUrlQueryParams(1, currentQuery, $event, currentSort)"
-/>
+<film-table-pagination />
