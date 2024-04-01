@@ -4,33 +4,39 @@ import {
     EventEmitter,
     Input,
     OnChanges,
-    OnInit,
     Output,
     SimpleChanges,
 } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 
 @Component({
     selector: 'app-pagination',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './pagination.component.html',
     styleUrl: './pagination.component.css',
 })
-export class PaginationComponent implements OnInit, OnChanges {
+export class PaginationComponent implements OnChanges {
     @Input('currentPage')
-    currentPage = 1
+    currentPage!: number
 
     @Input('totalPages')
-    totalPages = 10
+    totalPages!: number
+
+    @Input('totalElements')
+    totalElements!: number
+
+    @Input('pageSizeOptions')
+    pageSizeOptions!: number[]
+
+    @Output('changeSize')
+    changeSizeEmitter = new EventEmitter<number>()
 
     @Output('changePage')
-    changePageEmitter: EventEmitter<number> = new EventEmitter<number>()
+    changePageEmitter = new EventEmitter<number>()
 
-    pages: number[] = []
-
-    numDisplayedPages = 11
-
-    constructor() {}
+    @Input('currentPageSize')
+    currentPageSize = 10
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.currentPage && changes.currentPage.currentValue) {
@@ -39,21 +45,22 @@ export class PaginationComponent implements OnInit, OnChanges {
         if (changes.totalPages && changes.totalPages.currentValue) {
             this.totalPages = changes.totalPages.currentValue
         }
+        if (changes.currentPageSize && changes.currentPageSize.currentValue) {
+            this.currentPageSize = changes.currentPageSize.currentValue
+        }
+        if (changes.totalElements && changes.totalElements.currentValue) {
+            this.totalElements = changes.totalElements.currentValue
+        }
     }
 
-    get displayedPages() {
-        if (this.totalPages <= this.numDisplayedPages) {
-            return this.range(1, this.totalPages)
-        } else if (this.currentPage >= 1 && this.currentPage <= 6) {
-            return this.range(1, 11)
-        } else if (
-            this.currentPage > 6 &&
-            this.currentPage <= this.totalPages - 6
-        ) {
-            return this.range(this.currentPage - 5, this.currentPage + 5)
-        } else {
-            return this.range(this.totalPages - 10, this.totalPages)
-        }
+    get pageLastIndex() {
+        return this.currentPage === this.totalPages
+            ? this.totalElements
+            : this.currentPage * this.currentPageSize
+    }
+
+    get pageFirstIndex() {
+        return 1 + (this.currentPage - 1) * this.currentPageSize
     }
 
     get hasNext() {
@@ -62,12 +69,6 @@ export class PaginationComponent implements OnInit, OnChanges {
 
     get hasPrevious() {
         return this.currentPage > 1
-    }
-
-    ngOnInit() {}
-
-    range(start: number, end: number): number[] {
-        return [...new Array(end - start + 1).keys()].map((p) => p + start)
     }
 
     changePage(page: number) {

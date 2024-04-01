@@ -1,0 +1,68 @@
+<div class="row">
+    <div class="col-md-10">
+        <h3>Liste des films</h3>
+    </div>
+    <div class="col-md-2 text-end">
+        <a class="btn btn-primary">Ajouter un film</a>
+    </div>
+</div>
+
+<film-search-bar />
+
+<table
+    #sortedTarget
+    sortedTarget
+    (sortChange)="handleSort($event)"
+    [currentSort]="currentSort"
+    class="table"
+>
+    <thead>
+        <tr>
+            <th sortColumn="title" scope="col" role="button" class="col-md-4">
+                Titre
+            </th>
+            <th
+                sortColumn="release_year"
+                scope="col"
+                role="button"
+                class="col-md-2"
+            >
+                Année de sortie
+            </th>
+            <th sortColumn="length" scope="col" role="button" class="col-md-2">
+                Durée
+            </th>
+            <th sortColumn="rating" scope="col" role="button" class="col-md-2">
+                Classement
+            </th>
+            <th
+                sortColumn=""
+                scope="col"
+                role="button"
+                class="col-md-auto"
+            ></th>
+        </tr>
+    </thead>
+    <tbody *ngIf="pageFilm$ | async as pageFilm">
+        <!-- TODO: put this in its own component (film-list-item) -->
+        <tr *ngFor="let film of pageFilm.films" class="align-middle">
+            <td>{{ film.title }}</td>
+            <td>{{ film.releaseYear }}</td>
+            <td>{{ film.length | m2h }}</td>
+            <td>{{ film.rating }}</td>
+            <td class="text-end">
+                <a class="btn btn-outline-info me-2" ngbTooltip="Détails"
+                    ><i class="bi bi-eye"></i
+                ></a>
+                <a class="btn btn-outline-warning me-2" ngbTooltip="Modifier"
+                    ><i class="bi bi-pen"></i
+                ></a>
+                <a class="btn btn-outline-danger" ngbTooltip="Supprimer"
+                    ><i class="bi bi-trash"></i
+                ></a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<film-table-pagination />

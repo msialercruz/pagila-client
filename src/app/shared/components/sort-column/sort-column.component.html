@@ -1,0 +1,13 @@
+<ng-content></ng-content>
+
+<span>
+    <ng-container *ngIf="isDesc; else checkAsc">
+        <i class="bi bi-sort-down"></i>
+    </ng-container>
+
+    <ng-template #checkAsc>
+        <ng-container *ngIf="isAsc">
+            <i class="bi bi-sort-up"></i>
+        </ng-container>
+    </ng-template>
+</span>

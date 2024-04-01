@@ -1,0 +1,45 @@
+<div class="row justify-content-end">
+    <div class="col col-auto">
+        <label class="col-form-label">Afficher par page:</label>
+    </div>
+    <div class="col col-auto">
+        <select
+            class="form-select"
+            id=""
+            name=""
+            [(ngModel)]="currentPageSize"
+            (ngModelChange)="changeSizeEmitter.emit(currentPageSize)"
+        >
+            <option *ngFor="let size of pageSizeOptions" [ngValue]="size">
+                {{ size }}
+            </option>
+        </select>
+    </div>
+    <div class="col col-auto">
+        <label class="col-form-label"
+            >{{ pageFirstIndex }} à {{ pageLastIndex }} sur {{ totalElements }}
+        </label>
+    </div>
+    <div class="col col-auto">
+        <ul class="pagination btn-group" role="group">
+            <li class="page-item">
+                <a
+                    class="page-link"
+                    [class.disabled]="!hasPrevious"
+                    (click)="previous()"
+                >
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a
+                    class="page-link"
+                    [class.disabled]="!hasNext"
+                    (click)="next()"
+                >
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
