@@ -1,0 +1,21 @@
+<div class="row mt-3">
+    <div class="col col-md-3 mb-3">
+        <input
+            class="form-control"
+            id="film-special-features"
+            type="text"
+            [(ngModel)]="newFeature"
+        />
+    </div>
+    <div class="col col-md-4 mb-3">
+        <button type="button" class="btn btn-primary" (click)="addFeature()">
+            Ajouter
+        </button>
+    </div>
+</div>
+
+<span
+    class="special-feature badge text-bg-secondary mb-2 me-2"
+    *ngFor="let feature of specialFeatures"
+    >{{ feature }} <i class="bi bi-x" (click)="removeFeature(feature)"></i
+></span>

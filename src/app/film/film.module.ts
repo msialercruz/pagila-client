@@ -13,7 +13,8 @@ import { FilmService } from './services/film.service'
 import { FilmTablePaginationService } from './film-table-pagination/film-table-pagination.service'
 import { FilmSearchBarService } from './film-search-bar/film-search-bar.service'
 import { RouterModule } from '@angular/router'
-import { AddFilmFormComponent } from '../films/add-film-form/add-film-form.component'
+import { AddFilmFormComponent } from '../film/add-film-form/add-film-form.component'
+import { FilmSpecialFeaturesListComponent } from './film-special-features-list/film-special-features-list.component'
 
 @NgModule({
     imports: [
@@ -33,6 +34,7 @@ import { AddFilmFormComponent } from '../films/add-film-form/add-film-form.compo
         FilmTableComponent,
         AddFilmFormComponent,
         FilmTablePaginationComponent,
+        FilmSpecialFeaturesListComponent,
     ],
     exports: [FilmTableComponent, FilmTableComponent],
 })
