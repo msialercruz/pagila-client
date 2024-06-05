@@ -25,8 +25,6 @@ interface PageFilmDTO {
 export class FilmService {
     private readonly apiUrl = 'http://localhost:8080/films'
 
-    public pageFilmSubj = new BehaviorSubject<PageFilm>(new PageFilm())
-
     constructor(private http: HttpClient) {}
 
     getFilms(page?: number, query?: string, size?: number, sort?: string) {
