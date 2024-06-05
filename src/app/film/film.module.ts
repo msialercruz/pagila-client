@@ -12,9 +12,11 @@ import { SortColumnComponent } from '../shared/components/sort-column/sort-colum
 import { FilmService } from './services/film.service'
 import { FilmTablePaginationService } from './film-table-pagination/film-table-pagination.service'
 import { FilmSearchBarService } from './film-search-bar/film-search-bar.service'
+import { RouterModule } from '@angular/router'
 
 @NgModule({
     imports: [
+        RouterModule,
         CommonModule,
         FormsModule,
         PaginationComponent,
