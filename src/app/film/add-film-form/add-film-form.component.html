@@ -9,10 +9,19 @@
                 <input
                     type="text"
                     class="form-control"
+                    [class.is-invalid]="
+                        form.get('title')?.invalid && form.get('title')?.touched
+                    "
                     id="film-title"
                     formControlName="title"
                 />
+                <div id="film-title-validation" class="invalid-feedback">
+                    <span *ngIf="form.get('title')?.hasError('required')">
+                        Le titre est obligatoire.
+                    </span>
+                </div>
             </div>
+
             <div class="col col-md-3 mb-3">
                 <label for="film-release-year" class="form-label"
                     >Année de sortie *</label
@@ -21,28 +30,75 @@
                     id="film-release-year"
                     type="number"
                     class="form-control"
+                    [class.is-invalid]="
+                        form.get('releaseYear')?.invalid &&
+                        form.get('releaseYear')?.touched
+                    "
                     formControlName="releaseYear"
                 />
+                <div id="film-release-year-validation" class="invalid-feedback">
+                    <span *ngIf="form.get('releaseYear')?.hasError('required')">
+                        L'année de sortie est obligatoire.
+                    </span>
+                    <span
+                        *ngIf="
+                            form.get('releaseYear')?.hasError('min') ||
+                            form.get('releaseYear')?.hasError('max')
+                        "
+                    >
+                        L'année de sortie doit être un entier entre 1901 et
+                        2155.
+                    </span>
+                </div>
             </div>
+
             <div class="col col-md-3 mb-3">
                 <label for="film-length" class="form-label">Durée *</label>
                 <input
+                    id="film-length"
                     type="number"
                     class="form-control"
-                    id="film-length"
+                    [class.is-invalid]="
+                        form.get('length')?.invalid &&
+                        form.get('length')?.touched
+                    "
                     formControlName="length"
                 />
+                <div id="film-length-validation" class="invalid-feedback">
+                    <span *ngIf="form.get('length')?.hasError('required')">
+                        La durée est obligatoire.
+                    </span>
+                    <span
+                        *ngIf="
+                            form.get('length')?.hasError('min') ||
+                            form.get('length')?.hasError('max')
+                        "
+                    >
+                        La durée doit être un entier entre 0 et 32767.
+                    </span>
+                </div>
             </div>
         </div>
+
         <div class="mb-3">
             <label for="film-language" class="form-label">Description *</label>
             <textarea
-                class="form-control"
                 id="film-description"
+                class="form-control"
                 rows="3"
+                [class.is-invalid]="
+                    form.get('description')?.invalid &&
+                    form.get('description')?.touched
+                "
                 formControlName="description"
             ></textarea>
+            <div id="film-description-validation" class="invalid-feedback">
+                <span *ngIf="form.get('description')?.hasError('required')">
+                    La description est obligatoire.
+                </span>
+            </div>
         </div>
+
         <div class="row">
             <div class="col col-md-4 mb-3">
                 <label for="film-language" class="form-label">Langue</label>
@@ -60,6 +116,7 @@
                     </option>
                 </select>
             </div>
+
             <div class="col col-md-4 mb-3">
                 <label for="film-original-language" class="form-label"
                     >Langue originale</label
@@ -78,6 +135,7 @@
                     </option>
                 </select>
             </div>
+
             <div class="col col-md-4 mb-3">
                 <label for="film-rating" class="form-label">Classement</label>
                 <select
@@ -101,23 +159,60 @@
                     >Durée de location</label
                 >
                 <input
+                    id="film-rental-duration"
                     type="number"
                     class="form-control"
-                    id="film-rental-duration"
+                    [class.is-invalid]="
+                        form.get('rentalDuration')?.invalid &&
+                        form.get('rentalDuration')?.touched
+                    "
                     formControlName="rentalDuration"
                 />
+                <div
+                    id="film-rental-duration-validation"
+                    class="invalid-feedback"
+                >
+                    <span
+                        *ngIf="
+                            form.get('rentalDuration')?.hasError('min') ||
+                            form.get('rentalDuration')?.hasError('max')
+                        "
+                    >
+                        La durée de location doit être un entier entre 0 et
+                        32767.
+                    </span>
+                </div>
             </div>
+
             <div class="col col-md-4 mb-3">
                 <label for="film-rental-rate" class="form-label"
                     >Taux de location</label
                 >
                 <input
+                    id="film-rental-rate"
                     type="number"
                     class="form-control"
-                    id="film-rental-rate"
+                    [class.is-invalid]="
+                        form.get('rentalRate')?.invalid &&
+                        form.get('rentalRate')?.touched
+                    "
                     formControlName="rentalRate"
                 />
+                <div id="film-rental-rate-validation" class="invalid-feedback">
+                    <span
+                        *ngIf="
+                            form
+                                .get('rentalRate')
+                                ?.hasError('numberWithPrecisionAndScale')
+                        "
+                    >
+                        Le taux de location doit être un nombre composé de 4
+                        chiffres maximum, ayant 2 chiffres maximum avant la
+                        virgule et 2 chiffres maximum après la virgule.
+                    </span>
+                </div>
             </div>
+
             <div class="col col-md-4 mb-3">
                 <label for="film-replacement-cost" class="form-label"
                     >Coût de replacement</label
@@ -126,8 +221,28 @@
                     type="number"
                     class="form-control"
                     id="film-replacement-cost"
+                    [class.is-invalid]="
+                        form.get('replacementCost')?.invalid &&
+                        form.get('replacementCost')?.touched
+                    "
                     formControlName="replacementCost"
                 />
+                <div
+                    id="film-replacement-cost-validation"
+                    class="invalid-feedback"
+                >
+                    <span
+                        *ngIf="
+                            form
+                                .get('replacementCost')
+                                ?.hasError('numberWithPrecisionAndScale')
+                        "
+                    >
+                        Le coût de replacement doit être un nombre composé de 5
+                        chiffres maximum, ayant 3 chiffres maximum avant la
+                        virgule et 2 chiffres maximum après la virgule.
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -141,6 +256,12 @@
 
     <div class="mt-3 mb-3">
         <button class="btn btn-secondary me-3">Annuler</button>
-        <button class="btn btn-primary">Ajouter</button>
+        <button
+            class="btn btn-primary"
+            [disabled]="form.invalid"
+            (click)="submitForm()"
+        >
+            Ajouter
+        </button>
     </div>
 </form>
