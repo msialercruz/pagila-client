@@ -1,15 +1,29 @@
-import { BehaviorSubject } from 'rxjs'
 import { Film } from '../models/film.model'
-import { HttpClient, HttpParams } from '@angular/common/http'
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { map } from 'rxjs/operators'
+import { catchError, map } from 'rxjs/operators'
 import { PageFilm } from '../models/page-film.model'
+import { of, throwError } from 'rxjs'
 
 interface FilmDTO {
     title: string
     release_year: number
     length: number
     rating: string
+}
+
+interface CreateFilmDTO {
+    title: string
+    description: string
+    release_year: number
+    language_id: number
+    original_language_id: number
+    rental_duration: number
+    rental_rate: number
+    length: number
+    replacement_cost: number
+    rating: string
+    special_features: string[]
 }
 
 interface PageFilmDTO {
@@ -19,13 +33,22 @@ interface PageFilmDTO {
     page: number
 }
 
+export interface ApiError {
+    title: string
+    detail: string
+}
+
+export class ApiErrors extends Error {
+    constructor(public errors: ApiError[] = []) {
+        super()
+    }
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class FilmService {
     private readonly apiUrl = 'http://localhost:8080/films'
-
-    public pageFilmSubj = new BehaviorSubject<PageFilm>(new PageFilm())
 
     constructor(private http: HttpClient) {}
 
@@ -46,14 +69,8 @@ export class FilmService {
         const options = { params }
         return this.http.get<any[]>(this.apiUrl, options).pipe(
             map((data: PageFilmDTO | any) => {
-                const films = data['films'].map(
-                    (f: FilmDTO) =>
-                        new Film(
-                            f['title'],
-                            f['release_year'],
-                            f['length'],
-                            f['rating']
-                        )
+                const films = data['films'].map((dto: FilmDTO) =>
+                    this.filmDtoToFilm(dto)
                 )
                 return new PageFilm(
                     data['total_pages'],
@@ -63,5 +80,40 @@ export class FilmService {
                 )
             })
         )
+    }
+
+    createFilm(film: Film) {
+        const dto = this.filmToCreateFilmDTO(film)
+        return this.http.post<any>(this.apiUrl, dto).pipe(
+            map((dto: FilmDTO) => this.filmDtoToFilm(dto)),
+            catchError((err: HttpErrorResponse) => {
+                return throwError(() => err.error as ApiErrors)
+            })
+        )
+    }
+
+    private filmToCreateFilmDTO(film: Film) {
+        return {
+            title: film.title!,
+            description: film.description!,
+            release_year: film.releaseYear!,
+            language_id: film.languageId!,
+            original_language_id: film.originalLanguageId!,
+            rental_duration: film.rentalDuration!,
+            rental_rate: film.rentalRate!,
+            length: film.length!,
+            replacement_cost: film.replacementCost!,
+            rating: film.rating!,
+            special_features: film.specialFeatures!,
+        } as CreateFilmDTO
+    }
+
+    private filmDtoToFilm(dto: FilmDTO) {
+        return {
+            title: dto.title,
+            releaseYear: dto.release_year,
+            length: dto.length,
+            rating: dto.rating,
+        } as Film
     }
 }

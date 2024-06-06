@@ -1,0 +1,21 @@
+<form class="row mt-3" (submit)="addFeature()">
+    <div class="col col-md-3 mb-3">
+        <!-- ngModelOptions needed because of form tag -->
+        <input
+            class="form-control"
+            id="film-special-features"
+            type="text"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="newFeature"
+        />
+    </div>
+    <div class="col col-md-auto mb-3">
+        <button type="submit" class="btn btn-primary">Ajouter</button>
+    </div>
+</form>
+
+<span
+    class="special-feature badge text-bg-secondary mb-2 me-2"
+    *ngFor="let feature of specialFeatures"
+    >{{ feature }} <i class="bi bi-x" (click)="removeFeature(feature)"></i
+></span>
