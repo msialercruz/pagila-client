@@ -1,8 +1,13 @@
 export class Film {
-    constructor(
-        public title?: string,
-        public releaseYear?: number,
-        public length?: number,
-        public rating?: string
-    ) {}
+    title?: string
+    description?: string
+    releaseYear?: number
+    languageId?: number
+    originalLanguageId?: number
+    rentalDuration?: number
+    rentalRate?: number
+    length?: number
+    replacementCost?: number
+    rating?: string
+    specialFeatures?: string[]
 }

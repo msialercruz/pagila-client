@@ -17,6 +17,7 @@ export class FilmSpecialFeaturesListComponent {
         if (this.newFeature && !this.specialFeatures.has(this.newFeature)) {
             this.specialFeatures.add(this.newFeature)
             this.featuresChangedEmitter.emit(this.specialFeatures)
+            this.newFeature = ''
         }
     }
 

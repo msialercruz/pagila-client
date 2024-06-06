@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core'
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { Observable, map, tap } from 'rxjs'
 import { Language } from '../../language/models/language.model'
 import { numberWithPrecisionAndScale } from './add-film-form-validators'
+import { ApiErrors, FilmService } from '../services/film.service'
+import { Film } from '../models/film.model'
 
 @Component({
     selector: 'add-film-form',
@@ -64,11 +66,12 @@ export class AddFilmFormComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
-        private formBuilder: FormBuilder
+        private router: Router,
+        private formBuilder: FormBuilder,
+        private filmService: FilmService
     ) {}
 
     ngOnInit() {
-        console.log(this.form.controls.releaseYear)
         this.languages$ = this.route.data.pipe(
             map(({ languages }) => languages),
             tap((languages) => {
@@ -88,6 +91,17 @@ export class AddFilmFormComponent implements OnInit {
     }
 
     submitForm() {
-        console.log(this.form.value)
+        if (this.form.valid) {
+            this.filmService.createFilm(this.form.value as Film).subscribe({
+                next: () => {
+                    this.router.navigate(['/films'])
+                },
+                error: (err: ApiErrors) => {
+                    // TODO: display error inside view
+                    alert('Une erreur est survenue')
+                    console.error(err.errors)
+                },
+            })
+        }
     }
 }
