@@ -1,0 +1,10 @@
+<div *ngIf="card && !closed" class="my-3 border-danger card position-relative">
+    <div class="text-danger-emphasis card-body">
+        <i
+            (click)="closed = true"
+            class="position-absolute top-0 end-0 translate-middle-x bi bi-x"
+        ></i>
+        <h5 class="text-danger-emphasis">{{ card.header }}</h5>
+        <p>{{ card.body }}</p>
+    </div>
+</div>

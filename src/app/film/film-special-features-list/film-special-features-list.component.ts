@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core'
+import { Component, EventEmitter, Input, Output } from '@angular/core'
 
 @Component({
     selector: 'film-special-features-list',
@@ -8,6 +8,9 @@ import { Component, EventEmitter, Output } from '@angular/core'
 export class FilmSpecialFeaturesListComponent {
     @Output('featuresChanged')
     featuresChangedEmitter = new EventEmitter<Set<string>>()
+
+    @Input('disabled')
+    disabled = false
 
     specialFeatures = new Set<string>()
 

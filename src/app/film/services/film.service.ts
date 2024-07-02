@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { catchError, map } from 'rxjs/operators'
 import { PageFilm } from '../models/page-film.model'
-import { of, throwError } from 'rxjs'
+import { throwError } from 'rxjs'
 
 interface FilmDTO {
     title: string
@@ -33,13 +33,17 @@ interface PageFilmDTO {
     page: number
 }
 
-export interface ApiError {
+export type ApiError = {
     title: string
     detail: string
+    field?: string
 }
 
-export class ApiErrors extends Error {
-    constructor(public errors: ApiError[] = []) {
+export class ApiErrorList extends Error {
+    constructor(
+        public errors: ApiError[] = [],
+        public status: number
+    ) {
         super()
     }
 }
@@ -87,7 +91,10 @@ export class FilmService {
         return this.http.post<any>(this.apiUrl, dto).pipe(
             map((dto: FilmDTO) => this.filmDtoToFilm(dto)),
             catchError((err: HttpErrorResponse) => {
-                return throwError(() => err.error as ApiErrors)
+                return throwError(() => {
+                    const { errors } = err.error
+                    return new ApiErrorList(errors, err.status)
+                })
             })
         )
     }

@@ -1,4 +1,9 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms'
+import {
+    AbstractControl,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+} from '@angular/forms'
 
 export function numberWithPrecisionAndScale(
     precision: number,
@@ -23,3 +28,6 @@ export function numberWithPrecisionAndScale(
             : null
     }
 }
+
+export const positiveInt16 = () =>
+    Validators.compose([Validators.min(0), Validators.max(32767)])

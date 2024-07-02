@@ -7,10 +7,13 @@
             type="text"
             [ngModelOptions]="{ standalone: true }"
             [(ngModel)]="newFeature"
+            [disabled]="disabled"
         />
     </div>
     <div class="col col-md-auto mb-3">
-        <button type="submit" class="btn btn-primary">Ajouter</button>
+        <button type="submit" class="btn btn-primary" [disabled]="disabled">
+            Ajouter
+        </button>
     </div>
 </form>
 

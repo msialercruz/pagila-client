@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core'
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
-import { Observable, map, tap } from 'rxjs'
+import { Observable, finalize, map, tap } from 'rxjs'
 import { Language } from '../../language/models/language.model'
-import { numberWithPrecisionAndScale } from './add-film-form-validators'
-import { ApiErrors, FilmService } from '../services/film.service'
+import { ApiErrorList, FilmService } from '../services/film.service'
 import { Film } from '../models/film.model'
+import { snakeToCamel } from '../../../utils'
+import {
+    numberWithPrecisionAndScale,
+    positiveInt16,
+} from '../../shared/validators'
+import { ErrorCard } from '../../shared/components/error-card/error-card.component'
 
 @Component({
     selector: 'add-film-form',
@@ -13,11 +18,14 @@ import { Film } from '../models/film.model'
     styleUrl: './add-film-form.component.css',
 })
 export class AddFilmFormComponent implements OnInit {
-    // constants
+    submitted = false
+
+    card?: ErrorCard
+
     ratings = ['G', 'PG', 'PG-13', 'NC-17']
+
     defaultRating = 'G'
 
-    // observables
     languages$?: Observable<Language[]>
 
     // form controls getters
@@ -46,19 +54,9 @@ export class AddFilmFormComponent implements OnInit {
         ],
         languageId: [-1],
         originalLanguageId: [-1],
-        rentalDuration: [
-            3,
-            Validators.compose([Validators.min(0), Validators.max(32767)]),
-        ],
+        rentalDuration: [3, positiveInt16()],
         rentalRate: [4.99, numberWithPrecisionAndScale(4, 2)],
-        length: [
-            0,
-            Validators.compose([
-                Validators.required,
-                Validators.min(0),
-                Validators.max(32767),
-            ]),
-        ],
+        length: [0, Validators.compose([Validators.required, positiveInt16()])],
         replacementCost: [19.99, numberWithPrecisionAndScale(5, 2)],
         rating: [this.defaultRating],
         specialFeatures: new FormArray<FormControl<string>>([]),
@@ -91,17 +89,43 @@ export class AddFilmFormComponent implements OnInit {
     }
 
     submitForm() {
-        if (this.form.valid) {
-            this.filmService.createFilm(this.form.value as Film).subscribe({
+        if (!this.form.valid) {
+            return
+        }
+
+        this.submitted = true
+        this.card = undefined
+        this.form.disable()
+        this.filmService
+            .createFilm(this.form.value as Film)
+            .pipe(
+                finalize(() => {
+                    this.submitted = false
+                    this.form.enable()
+                })
+            )
+            .subscribe({
                 next: () => {
                     this.router.navigate(['/films'])
                 },
-                error: (err: ApiErrors) => {
-                    // TODO: display error inside view
-                    alert('Une erreur est survenue')
-                    console.error(err.errors)
+                error: (err: ApiErrorList) => {
+                    if (err.status === 400) {
+                        for (const e of err.errors) {
+                            const controlName = snakeToCamel(e.field!)
+                            if (this.form.get(controlName)) {
+                                this.form
+                                    .get(controlName)
+                                    ?.setErrors({ serverError: e.detail })
+                            }
+                        }
+                    } else {
+                        const first = err.errors[0]
+                        this.card = {
+                            header: first.title,
+                            body: first.detail,
+                        }
+                    }
                 },
             })
-        }
     }
 }
