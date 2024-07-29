@@ -1,0 +1,19 @@
+version: '3'
+services:
+    pagila-client:
+        container_name: pagila-client
+        hostname: pagila-client
+        ports:
+            - 4200:4200
+        networks:
+            - pagila-network
+        working_dir: /home/node/app
+        volumes:
+            - './:/home/node/app'
+        build:
+            context: .
+            dockerfile: Dockerfile
+networks:
+    pagila-network:
+        name: pagila-network
+        external: true
