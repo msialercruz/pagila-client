@@ -1,0 +1,10 @@
+*
+
+!./angular.json
+!./nginx.conf
+!./package.json
+!./package-lock.json
+!./src
+!./tsconfig.app.json
+!./tsconfig.json
+!./tsconfig.spec.json

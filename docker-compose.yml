@@ -2,6 +2,7 @@ version: '3'
 services:
     pagila-client:
         container_name: pagila-client
+        image: node:20.16.0
         hostname: pagila-client
         ports:
             - 4200:4200
@@ -10,10 +11,12 @@ services:
         working_dir: /home/node/app
         volumes:
             - './:/home/node/app'
-        build:
-            context: .
-            dockerfile: ./docker/Dockerfile
-        command: 'sh /home/node/app/docker/entrypoint.sh'
+        entrypoint: ['/bin/sh', '-c']
+        command:
+            - |
+                npm install
+                npm install -g @angular/cli
+                ng serve --host=0.0.0.0
 networks:
     pagila-network:
         name: pagila-network
