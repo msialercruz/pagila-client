@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core'
 import { catchError, map } from 'rxjs/operators'
 import { PageFilm } from '../models/page-film.model'
 import { throwError } from 'rxjs'
+import { environment } from '../../../environments/environment'
 
 interface FilmDTO {
     title: string
@@ -52,7 +53,7 @@ export class ApiErrorList extends Error {
     providedIn: 'root',
 })
 export class FilmService {
-    private readonly apiUrl = 'http://localhost:8080/films'
+    private readonly apiUrl = `${environment.apiUrl}/films`
 
     constructor(private http: HttpClient) {}
 

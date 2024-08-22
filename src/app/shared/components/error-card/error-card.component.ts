@@ -29,7 +29,7 @@ export class ErrorCardComponent implements OnChanges {
     closed = false
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.error.currentValue) {
+        if (changes.error && changes.error.currentValue) {
             this.closed = false
         }
     }
