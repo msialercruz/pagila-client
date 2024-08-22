@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import { Language } from '../models/language.model'
+import { environment } from '../../../environments/environment'
 
 type LanguageDTO = {
     language_id: number
@@ -12,7 +13,7 @@ type LanguageDTO = {
     providedIn: 'root',
 })
 export class LanguageService {
-    private readonly apiUrl = 'http://localhost:8080/languages'
+    private readonly apiUrl = `${environment.apiUrl}/languages`
 
     constructor(private http: HttpClient) {}
 
