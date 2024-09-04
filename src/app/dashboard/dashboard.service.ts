@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment'
 
 interface SalesByStoreDTO {
     store: string,
-    totalSalesPercentage: number,
+    totalSales: number,
 }
 
 interface SalesByFilmCategoryDTO {
@@ -25,7 +25,7 @@ export class DashboardService {
     getSalesByStore() {
         return this.http.get<any[]>(`${this.salesApiUrl}/by-store`).pipe(
             map((data: SalesByStoreDTO[]) => {
-                return data.map((e) => [e.store, e.totalSalesPercentage]) as any[]
+                return data.map((e) => [e.store, e.totalSales]) as any[]
             })
         );
     }

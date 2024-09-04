@@ -25,44 +25,6 @@ export function createChart(
     };
 }
 
-export function createPieChartOptions(
-    text: string,
-    data: any[],
-): Highcharts.Options {
-    return {
-        credits : {
-            enabled: false,
-        },
-        title: {
-            text,
-        },
-        tooltip: {
-            valueSuffix: '%'
-        },
-        series: [
-            {
-                type: 'pie',
-                size:'50%',
-                dataLabels: [
-                    {
-                        format: '{point.name}',
-                        connectorColor: 'var(--highcharts-neutral-color-80, #333)'
-                    },
-                    {
-                        format: '{point.percentage:.0f}%',
-                        distance: -30,
-                        style: {
-                            fontSize: '1.0em',
-                            textOutline: 'none'
-                        }
-                    }
-                ],
-                data,
-            }
-        ]
-    }
-}
-
 export function createColumnChartOptions(
     text: string,
     categories: string[],
@@ -83,7 +45,7 @@ export function createColumnChartOptions(
             crosshair: true,
         },
         yAxis: {
-            min: 0, // hardcodé
+            min: 0,
             title: {
                 text: yAxisTitle,
             }

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { DashboardService } from './dashboard.service';
+import * as constants from './constants';
 import {
     SimpleChart,
     createChart,
-    createPieChartOptions,
     createColumnChartOptions,
 } from './charts';
 import { SeriesLineOptions, Axis } from 'highcharts';
@@ -18,13 +18,7 @@ import { SeriesLineOptions, Axis } from 'highcharts';
 })
 export class DashboardComponent implements OnInit {
     public salesByStore: SimpleChart;
-    public salesByStoreOptions = createPieChartOptions(
-        'Nombre de ventes par magasin',
-        [
-            ['Magasin 1', 66],
-            ['Magasin 2', 34],
-        ],
-    )
+    public salesByStoreOptions = constants.SALES_BY_STORE_OPTIONS
 
     public salesByFilmCategory: SimpleChart;
     public salesByFilmCategoryOptions = createColumnChartOptions(
@@ -45,13 +39,13 @@ export class DashboardComponent implements OnInit {
             'Classics',
             'Family',
             'Drama',
-            'Comedy',
+            'Comedy', // TODO: eviter hardcode
         ],
-        'Ventes $',
+        "Ventes $",
         [
             182, 181, 178, 163, 158, 151, 143, 127, 124, 121, 120, 114, 108,
-            106, 106, 103,
-        ],
+            106, 106, 103, // valeurs fictives
+        ]
     )
     constructor(private dashboardService: DashboardService) {
         this.salesByStore = createChart(this.salesByStoreOptions)
@@ -60,6 +54,7 @@ export class DashboardComponent implements OnInit {
 
     ngOnInit() {
         this.dashboardService.getSalesByStore().subscribe((data: any) => {
+            // TODO: eviter cast explicite
             const series = this.salesByStoreOptions
                 .series as SeriesLineOptions[]
             series[0].data = data;
@@ -68,6 +63,7 @@ export class DashboardComponent implements OnInit {
         this.dashboardService
             .getSalesByFilmCategory()
             .subscribe((data: { categories: string[]; data: number[] }) => {
+            // TODO: eviter cast explicite
                 const series = this.salesByFilmCategoryOptions
                     .series as SeriesLineOptions[];
                 series[0].data = data.data;
