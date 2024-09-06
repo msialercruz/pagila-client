@@ -1,13 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { DashboardService } from './dashboard.service';
-import * as constants from './constants';
-import {
-    SimpleChart,
-    createChart,
-    createColumnChartOptions,
-} from './charts';
-import { SeriesLineOptions, Axis } from 'highcharts';
+import { SimpleChart, SalesByStore, SalesByFilmCategory } from './charts';
+import { Options, SeriesLineOptions, XAxisOptions } from 'highcharts';
 
 @Component({
     selector: 'app-dashboard',
@@ -18,38 +13,15 @@ import { SeriesLineOptions, Axis } from 'highcharts';
 })
 export class DashboardComponent implements OnInit {
     public salesByStore: SimpleChart;
-    public salesByStoreOptions = constants.SALES_BY_STORE_OPTIONS
-
+    public salesByStoreOptions: Options;
     public salesByFilmCategory: SimpleChart;
-    public salesByFilmCategoryOptions = createColumnChartOptions(
-        'Nombre de ventes par catégorie de films',
-        [
-            'Foreign',
-            'Children',
-            'Animation',
-            'Documentary',
-            'Action',
-            'Music',
-            'Sci-Fi',
-            'New',
-            'Sports',
-            'Games',
-            'Horror',
-            'Travel',
-            'Classics',
-            'Family',
-            'Drama',
-            'Comedy', // TODO: eviter hardcode
-        ],
-        "Ventes $",
-        [
-            182, 181, 178, 163, 158, 151, 143, 127, 124, 121, 120, 114, 108,
-            106, 106, 103, // valeurs fictives
-        ]
-    )
+    public salesByFilmCategoryOptions: Options;
+
     constructor(private dashboardService: DashboardService) {
-        this.salesByStore = createChart(this.salesByStoreOptions)
-        this.salesByFilmCategory = createChart(this.salesByFilmCategoryOptions)
+        this.salesByStore = SalesByStore;
+        this.salesByStoreOptions = this.salesByStore.chartOptions;
+        this.salesByFilmCategory = SalesByFilmCategory;
+        this.salesByFilmCategoryOptions = this.salesByFilmCategory.chartOptions;
     }
 
     ngOnInit() {
@@ -63,11 +35,12 @@ export class DashboardComponent implements OnInit {
         this.dashboardService
             .getSalesByFilmCategory()
             .subscribe((data: { categories: string[]; data: number[] }) => {
-            // TODO: eviter cast explicite
-                const series = this.salesByFilmCategoryOptions
-                    .series as SeriesLineOptions[];
+                // TODO: eviter cast explicite
+                const series = this.salesByFilmCategoryOptions.series as SeriesLineOptions[];
                 series[0].data = data.data;
+                const xAxis = this.salesByFilmCategoryOptions.xAxis as XAxisOptions;
+                xAxis.categories = data.categories;
                 this.salesByFilmCategory.updateFlag = true
-            })
+            });
     }
 }
